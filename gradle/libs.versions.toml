@@ -1,17 +1,25 @@
 [versions]
+archivesName = "diakoUtils"
+mavenGroup = "top.ourisland"
+modVersion = "0.1.0-SNAPSHOT"
+
+targetJava = "25"
+
 minecraft = "26.1.2"
 loader = "0.19.2"
 loom = "1.16-SNAPSHOT"
 fabricApi = "0.146.1+26.1.2"
-modVersion = "0.1.0-SNAPSHOT"
-mavenGroup = "top.ourisland"
-archivesName = "diakoUtils"
-targetJava = "25"
+
+lp = "5.5"
+nightConfig = "3.8.4"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "loader" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
+
+luckperms = { module = "net.luckperms:api", version.ref = "lp" }
+night-config-toml = { module = "com.electronwill.night-config:toml", version.ref = "nightConfig" }
 
 [plugins]
 fabric-loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }

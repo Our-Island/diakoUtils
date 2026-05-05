@@ -14,6 +14,7 @@ val targetJavaVersion = libs.versions.targetJava.get().toInt()
 
 repositories {
     // Loom adds the essential maven repositories for Minecraft and Fabric automatically.
+    mavenCentral()
 }
 
 dependencies {
@@ -21,22 +22,23 @@ dependencies {
 
     implementation(libs.fabric.loader)
     implementation(libs.fabric.api)
+
+    implementation(libs.night.config.toml)
+    compileOnly(libs.luckperms)
 }
 
 tasks.processResources {
-    inputs.properties(mapOf(
+    val props = mapOf(
         "version" to project.version,
-        "loaderVersion" to libs.versions.loader,
-        "minecraftVersion" to libs.versions.minecraft,
-    ))
+        "loaderVersion" to libs.versions.loader.get(),
+        "minecraftVersion" to libs.versions.minecraft.get(),
+    )
+
+    inputs.properties(props)
     filteringCharset = "UTF-8"
 
     filesMatching("fabric.mod.json") {
-        expand(
-            mapOf(
-                "version" to project.version,
-            )
-        )
+        expand(props)
     }
 }
 
@@ -54,7 +56,7 @@ java {
 
 tasks.jar {
     inputs.property("projectName", project.name)
-    from("LICENSE") {
+    from("LICENSE.txt") {
         rename { "${it}_${project.name}" }
     }
 }

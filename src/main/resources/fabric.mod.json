@@ -7,15 +7,21 @@
   "authors": [],
   "contact": {},
   "license": "MIT",
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
     "main": [
       "top.ourisland.diakoutils.DiakoUtils"
     ]
   },
+  "mixins": [
+    "diakoutils.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=${loaderVersion}",
     "fabric-api": "*",
     "minecraft": "${minecraftVersion}"
+  },
+  "suggests": {
+    "luckperms": "*"
   }
 }
