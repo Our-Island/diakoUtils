@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "diakoutils",
+  "version": "${version}",
+  "name": "diakoUtils",
+  "description": "A server-side utility mod for survival servers.",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "top.ourisland.diakoutils.DiakoUtils"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loaderVersion}",
+    "fabric-api": "*",
+    "minecraft": "${minecraftVersion}"
+  }
+}
