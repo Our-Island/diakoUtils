@@ -9,12 +9,13 @@ import top.ourisland.diakoutils.DiakoUtils;
 
 public final class DiakoPermissions {
 
-    public static final String ROOT = "diakoutils.command";
-    public static final String LIST = "diakoutils.command.list";
-    public static final String STATUS = "diakoutils.command.status";
-    public static final String ENABLE = "diakoutils.command.enable";
-    public static final String DISABLE = "diakoutils.command.disable";
-    public static final String RELOAD = "diakoutils.command.reload";
+    public static final String
+            ROOT = "diakoutils.command",
+            LIST = "diakoutils.command.list",
+            STATUS = "diakoutils.command.status",
+            ENABLE = "diakoutils.command.enable",
+            DISABLE = "diakoutils.command.disable",
+            RELOAD = "diakoutils.command.reload";
 
     private static final String LUCKPERMS_MOD_ID = "luckperms";
     private static boolean warnedLuckPermsFailure = false;
@@ -31,7 +32,7 @@ public final class DiakoPermissions {
             return true;
         }
 
-        Boolean luckPermsResult = luckPermsResult(player, permissions);
+        var luckPermsResult = luckPermsResult(player, permissions);
         if (luckPermsResult != null) {
             return luckPermsResult;
         }

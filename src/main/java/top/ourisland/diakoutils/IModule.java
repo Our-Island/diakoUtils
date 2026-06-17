@@ -10,7 +10,7 @@ public interface IModule {
     }
 
     default void loadConfig(Config config, String path) {
-        Object value = config.get(path + ".enabled");
+        var value = config.get(path + ".enabled");
         setEnabled(value instanceof Boolean enabled && enabled);
     }
 
@@ -29,7 +29,11 @@ public interface IModule {
     }
 
     default String statusLine() {
-        return id() + " (" + displayName() + "): " + (enabled() ? "enabled" : "disabled");
+        return "%s (%s): %s".formatted(
+                id(),
+                displayName(),
+                enabled() ? "enabled" : "disabled"
+        );
     }
 
     String id();

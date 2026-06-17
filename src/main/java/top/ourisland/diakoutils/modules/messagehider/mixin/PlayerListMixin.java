@@ -2,7 +2,6 @@ package top.ourisland.diakoutils.modules.messagehider.mixin;
 
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,7 +30,7 @@ public abstract class PlayerListMixin {
             ChatType.Bound chatType,
             CallbackInfo ci
     ) {
-        MessageHiderModule module = messageHider();
+        var module = messageHider();
         if (module != null && module.shouldHidePublicChat()) {
             ci.cancel();
         }
@@ -60,17 +59,17 @@ public abstract class PlayerListMixin {
 
     @Unique
     private static boolean shouldHideJoinLeaveMessage(Component message) {
-        MessageHiderModule module = messageHider();
+        var module = messageHider();
         if (module == null || !module.shouldHideJoinLeaveMessages()) {
             return false;
         }
 
-        ComponentContents contents = message.getContents();
+        var contents = message.getContents();
         if (!(contents instanceof TranslatableContents translatable)) {
             return false;
         }
 
-        String key = translatable.getKey();
+        var key = translatable.getKey();
         return key.equals("multiplayer.player.joined")
                 || key.equals("multiplayer.player.joined.renamed")
                 || key.equals("multiplayer.player.left");

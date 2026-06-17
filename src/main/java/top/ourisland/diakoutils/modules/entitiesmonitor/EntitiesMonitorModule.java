@@ -30,19 +30,19 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
 
     @Override
     public void loadConfig(Config config, String path) {
-        Object enabledValue = config.get(path + ".enabled");
+        var enabledValue = config.get(path + ".enabled");
         setEnabled(enabledValue instanceof Boolean enabled && enabled);
 
         threshold = intValue(config.get(path + ".threshold"), threshold, 0);
         checkIntervalTicks = intValue(config.get(path + ".check_interval_ticks"), checkIntervalTicks, 1);
         cooldownTicks = intValue(config.get(path + ".cooldown_ticks"), cooldownTicks, 0);
 
-        Object overlayValue = config.get(path + ".overlay");
+        var overlayValue = config.get(path + ".overlay");
         if (overlayValue instanceof Boolean value) {
             overlay = value;
         }
 
-        Object messageValue = config.get(path + ".message_template");
+        var messageValue = config.get(path + ".message_template");
         if (messageValue instanceof String value && !value.isBlank()) {
             messageTemplate = value;
         }
@@ -86,7 +86,11 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
         return "Entities Monitor";
     }
 
-    private static int intValue(Object value, int fallback, int min) {
+    private static int intValue(
+            Object value,
+            int fallback,
+            int min
+    ) {
         int parsed = value instanceof Number number ? number.intValue() : fallback;
         return Math.max(min, parsed);
     }
@@ -99,13 +103,13 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
             return;
         }
 
-        int total = countAllEntities(server);
-        boolean over = total > threshold;
-        boolean cooldownReady = lastNotifyTick < 0 || tickCounter - lastNotifyTick >= cooldownTicks;
-        boolean shouldNotify = over && (!lastWasOver || cooldownReady);
+        var total = countAllEntities(server);
+        var over = total > threshold;
+        var cooldownReady = lastNotifyTick < 0 || tickCounter - lastNotifyTick >= cooldownTicks;
+        var shouldNotify = over && (!lastWasOver || cooldownReady);
 
         if (shouldNotify) {
-            String message = messageTemplate
+            var message = messageTemplate
                     .replace("{count}", String.valueOf(total))
                     .replace("{threshold}", String.valueOf(threshold));
 

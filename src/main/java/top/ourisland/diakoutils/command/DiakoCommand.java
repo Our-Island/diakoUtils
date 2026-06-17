@@ -9,7 +9,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import top.ourisland.diakoutils.DiakoUtils;
 import top.ourisland.diakoutils.IModule;
 import top.ourisland.diakoutils.permissions.DiakoPermissions;
@@ -106,14 +105,14 @@ public final class DiakoCommand {
 
     private static int list(CommandSourceStack source) {
         source.sendSuccess(() -> header("Available Modules"), false);
-        for (IModule module : DiakoUtils.MODULES.all()) {
+        for (var module : DiakoUtils.MODULES.all()) {
             source.sendSuccess(() -> moduleLine(module), false);
         }
         return 1;
     }
 
     private static int status(CommandSourceStack source, String id) {
-        IModule module = DiakoUtils.MODULES.get(id);
+        var module = DiakoUtils.MODULES.get(id);
         if (module == null) {
             source.sendFailure(error("Unknown module: " + id));
             return 0;
@@ -130,7 +129,7 @@ public final class DiakoCommand {
     }
 
     private static int setEnabled(CommandSourceStack source, String id, boolean enabled) {
-        boolean found = enabled
+        var found = enabled
                 ? DiakoUtils.MODULES.enable(id, source.getServer())
                 : DiakoUtils.MODULES.disable(id, source.getServer());
 
@@ -148,8 +147,8 @@ public final class DiakoCommand {
     }
 
     private static Component moduleLine(IModule module) {
-        ChatFormatting stateColor = module.enabled() ? ChatFormatting.GREEN : ChatFormatting.RED;
-        String state = module.enabled() ? "Enabled" : "Disabled";
+        var stateColor = module.enabled() ? ChatFormatting.GREEN : ChatFormatting.RED;
+        var state = module.enabled() ? "Enabled" : "Disabled";
 
         return Component.empty()
                 .append(Component.literal(" • ").withStyle(ChatFormatting.DARK_GRAY))
@@ -194,9 +193,9 @@ public final class DiakoCommand {
     }
 
     private static Component line(String... parts) {
-        MutableComponent result = Component.empty().withStyle(ChatFormatting.GRAY);
-        for (String part : parts) {
-            boolean command = part.startsWith("/");
+        var result = Component.empty().withStyle(ChatFormatting.GRAY);
+        for (var part : parts) {
+            var command = part.startsWith("/");
             result.append(Component.literal(part).withStyle(command ? ChatFormatting.AQUA : ChatFormatting.GRAY));
         }
         return result;

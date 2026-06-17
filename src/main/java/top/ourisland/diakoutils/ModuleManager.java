@@ -67,7 +67,7 @@ public final class ModuleManager {
     public void onEndServerTick(MinecraftServer server) {
         currentServer = server;
 
-        for (IModule module : modules.values()) {
+        for (var module : modules.values()) {
             if (module.enabled() && module instanceof TickingModule tickingModule) {
                 tickingModule.onEndServerTick(server);
             }

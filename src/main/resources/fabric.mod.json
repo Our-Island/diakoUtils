@@ -4,7 +4,10 @@
   "version": "${version}",
   "name": "diakoUtils",
   "description": "A server-side utility mod for survival servers.",
-  "authors": [],
+  "authors": [
+    "Chiloven945",
+    "Our-Island"
+  ],
   "contact": {},
   "license": "MIT",
   "environment": "*",
@@ -19,7 +22,7 @@
   "depends": {
     "fabricloader": ">=${loaderVersion}",
     "fabric-api": "*",
-    "minecraft": "${minecraftVersion}"
+    "minecraft": "~${minecraftVersion}"
   },
   "suggests": {
     "luckperms": "*"

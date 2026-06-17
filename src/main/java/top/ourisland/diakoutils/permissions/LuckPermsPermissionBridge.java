@@ -18,8 +18,8 @@ final class LuckPermsPermissionBridge {
 
         boolean hasUndefined = false;
         boolean hasFalse = false;
-        for (String permission : permissions) {
-            Tristate result = user.getCachedData()
+        for (var permission : permissions) {
+            var result = user.getCachedData()
                     .getPermissionData()
                     .checkPermission(permission);
 

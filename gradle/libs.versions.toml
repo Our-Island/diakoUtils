@@ -1,17 +1,17 @@
 [versions]
 archivesName = "diakoUtils"
 mavenGroup = "top.ourisland"
-modVersion = "0.1.0-SNAPSHOT"
+modVersion = "0.1.1-SNAPSHOT"
 
 targetJava = "25"
 
-minecraft = "26.1.2"
-loader = "0.19.2"
+minecraft = "26.2"
+loader = "0.19.3"
 loom = "1.16-SNAPSHOT"
-fabricApi = "0.146.1+26.1.2"
+fabricApi = "0.152.1+26.2"
 
 lp = "5.5"
-nightConfig = "3.8.4"
+nightConfig = "3.9.0"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }

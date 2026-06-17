@@ -17,15 +17,15 @@ public final class MessageHiderModule extends AbstractModule {
 
     @Override
     public void loadConfig(Config config, String path) {
-        Object enabledValue = config.get(path + ".enabled");
+        var enabledValue = config.get(path + ".enabled");
         setEnabled(enabledValue instanceof Boolean enabled && enabled);
 
-        Object hidePublicChatValue = config.get(path + ".hide_public_chat");
+        var hidePublicChatValue = config.get(path + ".hide_public_chat");
         if (hidePublicChatValue instanceof Boolean value) {
             hidePublicChat = value;
         }
 
-        Object hideJoinLeaveValue = config.get(path + ".hide_join_leave_messages");
+        var hideJoinLeaveValue = config.get(path + ".hide_join_leave_messages");
         if (hideJoinLeaveValue instanceof Boolean value) {
             hideJoinLeaveMessages = value;
         }

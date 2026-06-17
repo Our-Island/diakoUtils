@@ -37,15 +37,15 @@ public final class ConfigManager {
             return;
         }
 
-        boolean configExists = Files.exists(path);
+        var configExists = Files.exists(path);
         try (var config = FileConfig.builder(path).build()) {
             if (configExists) {
                 config.load();
             }
 
             for (var module : modules.all()) {
-                boolean wasEnabled = module.enabled();
-                String modulePath = modulePath(module.id());
+                var wasEnabled = module.enabled();
+                var modulePath = modulePath(module.id());
 
                 module.loadConfig(config, modulePath);
                 module.saveConfig(config, modulePath);
@@ -87,7 +87,7 @@ public final class ConfigManager {
             return;
         }
 
-        boolean configExists = Files.exists(path);
+        var configExists = Files.exists(path);
         try (var config = FileConfig.builder(path).build()) {
             if (configExists) {
                 config.load();
