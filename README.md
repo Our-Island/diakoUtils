@@ -43,13 +43,6 @@ Current options:
 - Overlay/actionbar output toggle
 - Custom warning message template
 
-## Requirements
-
-- Minecraft `26.1.x`
-- Fabric Loader `0.19.2` or newer compatible version
-- Fabric API `0.146.1` or newer compatible version
-- Java `25`
-
 ## Optional integrations
 
 ### LuckPerms
