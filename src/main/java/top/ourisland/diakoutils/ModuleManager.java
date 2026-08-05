@@ -16,6 +16,7 @@ public final class ModuleManager {
         if (modules.containsKey(module.id())) {
             throw new IllegalArgumentException("Duplicate module id: " + module.id());
         }
+
         modules.put(module.id(), module);
     }
 
@@ -38,6 +39,7 @@ public final class ModuleManager {
 
     public boolean enable(String id, MinecraftServer server) {
         var module = modules.get(id);
+
         if (module == null) {
             return false;
         }
@@ -52,6 +54,7 @@ public final class ModuleManager {
 
     public boolean disable(String id, MinecraftServer server) {
         var module = modules.get(id);
+
         if (module == null) {
             return false;
         }
@@ -67,11 +70,12 @@ public final class ModuleManager {
     public void onEndServerTick(MinecraftServer server) {
         currentServer = server;
 
-        for (var module : modules.values()) {
-            if (module.enabled() && module instanceof TickingModule tickingModule) {
-                tickingModule.onEndServerTick(server);
-            }
-        }
+        modules.values().stream()
+                .filter(module -> module.enabled()
+                        && module instanceof TickingModule
+                )
+                .map(module -> (TickingModule) module)
+                .forEach(tickingModule -> tickingModule.onEndServerTick(server));
     }
 
     public MinecraftServer currentServer() {

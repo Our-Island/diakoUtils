@@ -23,11 +23,17 @@ public final class DiakoPermissions {
     private DiakoPermissions() {
     }
 
-    public static boolean has(CommandSourceStack source, String permission) {
+    public static boolean has(
+            CommandSourceStack source,
+            String permission
+    ) {
         return hasAny(source, permission);
     }
 
-    public static boolean hasAny(CommandSourceStack source, String... permissions) {
+    public static boolean hasAny(
+            CommandSourceStack source,
+            String... permissions
+    ) {
         if (!(source.getEntity() instanceof ServerPlayer player)) {
             return true;
         }
@@ -40,7 +46,10 @@ public final class DiakoPermissions {
         return hasVanillaGamemasterPermission(source);
     }
 
-    private static Boolean luckPermsResult(ServerPlayer player, String... permissions) {
+    private static Boolean luckPermsResult(
+            ServerPlayer player,
+            String... permissions
+    ) {
         if (!FabricLoader.getInstance().isModLoaded(LUCKPERMS_MOD_ID)) {
             return null;
         }
@@ -54,7 +63,9 @@ public final class DiakoPermissions {
     }
 
     private static boolean hasVanillaGamemasterPermission(CommandSourceStack source) {
-        return source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS));
+        return source.permissions().hasPermission(
+                new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)
+        );
     }
 
     private static void warnLuckPermsFailure(Throwable error) {

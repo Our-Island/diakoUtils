@@ -33,9 +33,21 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
         var enabledValue = config.get(path + ".enabled");
         setEnabled(enabledValue instanceof Boolean enabled && enabled);
 
-        threshold = intValue(config.get(path + ".threshold"), threshold, 0);
-        checkIntervalTicks = intValue(config.get(path + ".check_interval_ticks"), checkIntervalTicks, 1);
-        cooldownTicks = intValue(config.get(path + ".cooldown_ticks"), cooldownTicks, 0);
+        threshold = intValue(
+                config.get(path + ".threshold"),
+                threshold,
+                0
+        );
+        checkIntervalTicks = intValue(
+                config.get(path + ".check_interval_ticks"),
+                checkIntervalTicks,
+                1
+        );
+        cooldownTicks = intValue(
+                config.get(path + ".cooldown_ticks"),
+                cooldownTicks,
+                0
+        );
 
         var overlayValue = config.get(path + ".overlay");
         if (overlayValue instanceof Boolean value) {
@@ -68,11 +80,15 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
     @Override
     public String statusLine() {
         return "Status: %s | Threshold: %d | Check interval: %d ticks | Cooldown: %d ticks | Overlay: %s".formatted(
-                enabled() ? "§aEnabled§r" : "§cDisabled§r",
+                enabled()
+                        ? "§aEnabled§r"
+                        : "§cDisabled§r",
                 threshold,
                 checkIntervalTicks,
                 cooldownTicks,
-                overlay ? "§aon§r" : "§coff§r"
+                overlay
+                        ? "§aon§r"
+                        : "§coff§r"
         );
     }
 
@@ -91,7 +107,9 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
             int fallback,
             int min
     ) {
-        int parsed = value instanceof Number number ? number.intValue() : fallback;
+        var parsed = value instanceof Number number
+                ? number.intValue()
+                : fallback;
         return Math.max(min, parsed);
     }
 
@@ -115,7 +133,7 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
 
             var text = Component.literal(message);
             var playerList = server.getPlayerList();
-            playerList.broadcastSystemMessage(text, ignored -> text, overlay);
+            playerList.broadcastSystemMessage(text, _ -> text, overlay);
 
             DiakoUtils.LOGGER.info("[{}] {}", ID, message);
             lastNotifyTick = tickCounter;
@@ -129,7 +147,11 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
         var anyEntity = EntityTypeTest.forClass(Entity.class);
 
         for (var level : server.getAllLevels()) {
-            level.getEntities(anyEntity, _ -> true, counter);
+            level.getEntities(
+                    anyEntity,
+                    _ -> true,
+                    counter
+            );
         }
 
         return counter.getCount();

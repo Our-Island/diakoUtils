@@ -9,15 +9,20 @@ final class LuckPermsPermissionBridge {
     private LuckPermsPermissionBridge() {
     }
 
-    static Boolean hasAnyPermission(ServerPlayer player, String... permissions) {
+    static Boolean hasAnyPermission(
+            ServerPlayer player,
+            String... permissions
+    ) {
         var luckPerms = LuckPermsProvider.get();
         var user = luckPerms.getUserManager().getUser(player.getUUID());
+
         if (user == null) {
             return null;
         }
 
-        boolean hasUndefined = false;
-        boolean hasFalse = false;
+        var hasUndefined = false;
+        var hasFalse = false;
+
         for (var permission : permissions) {
             var result = user.getCachedData()
                     .getPermissionData()
@@ -26,9 +31,11 @@ final class LuckPermsPermissionBridge {
             if (result == Tristate.TRUE) {
                 return true;
             }
+
             if (result == Tristate.FALSE) {
                 hasFalse = true;
             }
+
             if (result == Tristate.UNDEFINED) {
                 hasUndefined = true;
             }
@@ -37,7 +44,10 @@ final class LuckPermsPermissionBridge {
         if (hasFalse) {
             return false;
         }
-        return hasUndefined ? null : false;
+
+        return hasUndefined
+                ? null
+                : false;
     }
 
 }

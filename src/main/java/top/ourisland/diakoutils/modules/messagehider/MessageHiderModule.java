@@ -41,9 +41,15 @@ public final class MessageHiderModule extends AbstractModule {
     @Override
     public String statusLine() {
         return "Status: %s | Public chat: %s | Join/leave messages: %s".formatted(
-                enabled() ? "§aEnabled§r" : "§cDisabled§r",
-                shouldHidePublicChat() ? "§ahidden§r" : "§cvisible§r",
-                shouldHideJoinLeaveMessages() ? "§ahidden§r" : "§cvisible§r"
+                enabled()
+                        ? "§aEnabled§r"
+                        : "§cDisabled§r",
+                shouldHidePublicChat()
+                        ? "§ahidden§r"
+                        : "§cvisible§r",
+                shouldHideJoinLeaveMessages()
+                        ? "§ahidden§r"
+                        : "§cvisible§r"
         );
     }
 

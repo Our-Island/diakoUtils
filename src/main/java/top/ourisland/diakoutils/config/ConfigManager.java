@@ -33,7 +33,12 @@ public final class ConfigManager {
         try {
             Files.createDirectories(path.getParent());
         } catch (IOException e) {
-            DiakoUtils.LOGGER.error("[{}] Failed to create config directory for {}", DiakoUtils.MOD_ID, path, e);
+            DiakoUtils.LOGGER.error(
+                    "[{}] Failed to create config directory for {}",
+                    DiakoUtils.MOD_ID,
+                    path,
+                    e
+            );
             return;
         }
 
@@ -43,18 +48,29 @@ public final class ConfigManager {
                 config.load();
             }
 
-            for (var module : modules.all()) {
+            modules.all().forEach(module -> {
                 var wasEnabled = module.enabled();
                 var modulePath = modulePath(module.id());
 
                 module.loadConfig(config, modulePath);
                 module.saveConfig(config, modulePath);
-                fireLifecycleIfNeeded(server, module, wasEnabled, module.enabled());
-            }
+
+                fireLifecycleIfNeeded(
+                        server,
+                        module,
+                        wasEnabled,
+                        module.enabled()
+                );
+            });
 
             config.save();
         } catch (RuntimeException e) {
-            DiakoUtils.LOGGER.error("[{}] Failed to load/save TOML config {}", DiakoUtils.MOD_ID, path, e);
+            DiakoUtils.LOGGER.error(
+                    "[{}] Failed to load/save TOML config {}",
+                    DiakoUtils.MOD_ID,
+                    path,
+                    e
+            );
         }
     }
 
@@ -83,7 +99,12 @@ public final class ConfigManager {
         try {
             Files.createDirectories(path.getParent());
         } catch (IOException e) {
-            DiakoUtils.LOGGER.error("[{}] Failed to create config directory for {}", DiakoUtils.MOD_ID, path, e);
+            DiakoUtils.LOGGER.error(
+                    "[{}] Failed to create config directory for {}",
+                    DiakoUtils.MOD_ID,
+                    path,
+                    e
+            );
             return;
         }
 
@@ -93,13 +114,21 @@ public final class ConfigManager {
                 config.load();
             }
 
-            for (var module : modules.all()) {
-                module.saveConfig(config, modulePath(module.id()));
-            }
+            modules.all().forEach(module ->
+                    module.saveConfig(
+                            config,
+                            modulePath(module.id())
+                    )
+            );
 
             config.save();
         } catch (RuntimeException e) {
-            DiakoUtils.LOGGER.error("[{}] Failed to save TOML config {}", DiakoUtils.MOD_ID, path, e);
+            DiakoUtils.LOGGER.error(
+                    "[{}] Failed to save TOML config {}",
+                    DiakoUtils.MOD_ID,
+                    path,
+                    e
+            );
         }
     }
 

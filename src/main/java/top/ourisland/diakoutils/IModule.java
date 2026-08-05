@@ -32,7 +32,9 @@ public interface IModule {
         return "%s (%s): %s".formatted(
                 id(),
                 displayName(),
-                enabled() ? "enabled" : "disabled"
+                enabled()
+                        ? "enabled"
+                        : "disabled"
         );
     }
 
