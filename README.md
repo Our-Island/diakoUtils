@@ -9,8 +9,8 @@ Repository: <https://github.com/Our-Island/diakoUtils>
 
 ## Features
 
-- Runtime module management through `/diako`
-- TOML configuration in the Minecraft `config/` directory
+- Runtime module and property management through `/diako`
+- Annotation-driven, validated TOML configuration in the Minecraft `config/` directory
 - Optional LuckPerms permission support
 - Vanilla permission fallback when LuckPerms is not installed
 - Server-side module architecture for adding more utilities later
@@ -66,28 +66,35 @@ Available subcommands:
 /diako status <module>
 /diako enable <module>
 /diako disable <module>
+/diako config <module>
+/diako config <module> list
+/diako config <module> get <property>
+/diako config <module> set <property> <value>
+/diako config <module> reset <property>
+/diako config <module> reset-all
 /diako reload
 ```
 
-The `<module>` argument suggests registered module IDs, such as:
-
-```text
-message_hider
-entities_monitor
-```
+The `<module>` argument suggests registered module IDs. Property commands also suggest property IDs and common values
+such as booleans, enum values, defaults, and configured numeric limits. String values use a greedy argument, so values
+containing spaces do not need quotes.
 
 ## Permissions
 
 When LuckPerms is installed, use these permission nodes:
 
-| Permission                   | Description                                   |
-|------------------------------|-----------------------------------------------|
-| `diakoutils.command`         | Grants access to all `/diako` command actions |
-| `diakoutils.command.list`    | Grants `/diako list`                          |
-| `diakoutils.command.status`  | Grants `/diako status <module>`               |
-| `diakoutils.command.enable`  | Grants `/diako enable <module>`               |
-| `diakoutils.command.disable` | Grants `/diako disable <module>`              |
-| `diakoutils.command.reload`  | Grants `/diako reload`                        |
+| Permission                        | Description                                      |
+|-----------------------------------|--------------------------------------------------|
+| `diakoutils.command`              | Grants access to all `/diako` command actions    |
+| `diakoutils.command.list`         | Grants `/diako list`                             |
+| `diakoutils.command.status`       | Grants `/diako status <module>`                  |
+| `diakoutils.command.enable`       | Grants `/diako enable <module>`                  |
+| `diakoutils.command.disable`      | Grants `/diako disable <module>`                 |
+| `diakoutils.command.reload`       | Grants `/diako reload`                           |
+| `diakoutils.command.config`       | Grants all module property commands              |
+| `diakoutils.command.config.get`   | Grants property `list` and `get` commands        |
+| `diakoutils.command.config.set`   | Grants the property `set` command                |
+| `diakoutils.command.config.reset` | Grants property `reset` and `reset-all` commands |
 
 Example LuckPerms commands:
 
@@ -95,6 +102,7 @@ Example LuckPerms commands:
 /lp group admin permission set diakoutils.command true
 /lp group moderator permission set diakoutils.command.list true
 /lp group moderator permission set diakoutils.command.status true
+/lp group moderator permission set diakoutils.command.config.get true
 ```
 
 ## Configuration
@@ -105,7 +113,8 @@ Configuration file:
 config/diakoutils.toml
 ```
 
-All modules are disabled by default. The file is created automatically on first run.
+All modules are disabled by default. The file is created automatically on first run. Module properties are declared with
+`@ModuleProperty`, loaded and validated atomically per module, and written to their existing TOML paths.
 
 Example configuration:
 
@@ -124,6 +133,10 @@ overlay = false
 message_template = "[EntitiesMonitor] TOO MANY ENTITIES!!!!! {count} (Threshold {threshold})"
 ```
 
+Property changes made through `/diako config` are applied immediately and persisted. If saving fails, the in-memory
+value is rolled back. `/diako reload` validates a complete candidate property set before applying it, so a module is
+never left partially updated.
+
 ### Message template placeholders
 
 The `entities_monitor.message_template` option supports these placeholders:
@@ -133,9 +146,11 @@ The `entities_monitor.message_template` option supports these placeholders:
 | `{count}`     | Current total entity count  |
 | `{threshold}` | Configured entity threshold |
 
+The template must contain `{count}`.
+
 ## Development
 
-This project targets Minecraft 26.1, which uses unobfuscated classes and does not use Yarn mappings.
+This project targets Minecraft 26.2, which uses unobfuscated classes and does not use Yarn mappings.
 
 Build the project with:
 
@@ -169,8 +184,11 @@ src/main/java/top/ourisland/diakoutils/
 ├── IModule.java
 ├── ModuleManager.java
 ├── TickingModule.java
+├── annotation/
 ├── command/
 ├── config/
+├── discovery/
+├── property/
 ├── modules/
 │   ├── entitiesmonitor/
 │   └── messagehider/
@@ -179,11 +197,38 @@ src/main/java/top/ourisland/diakoutils/
 
 ## Adding a new module
 
-1. Create a class implementing `IModule`, or extend `AbstractModule`.
-2. Implement `id()`, `displayName()`, `description()`, `loadConfig(...)`, and `saveConfig(...)`.
-3. Implement `TickingModule` if the module needs server tick callbacks.
-4. Register the module in `DiakoUtils#onInitialize()`.
-5. Add any required mixins to `diakoutils.mixins.json`.
+1. Create a public, non-abstract class implementing `IModule`, or extend `AbstractModule`.
+2. Add `@DiakoModule` to the class and place it under `top.ourisland.diakoutils.modules` or one of its subpackages.
+3. Add configurable, non-static, non-final fields and annotate them with `@ModuleProperty`.
+4. Implement `TickingModule` if the module needs server tick callbacks.
+5. Override `validateProperties(...)` for rules involving multiple properties.
+6. Override `onPropertiesChanged(...)` only when runtime caches or counters must be refreshed.
+7. Add any required mixins to `diakoutils.mixins.json`.
+
+Example:
+
+```java
+@DiakoModule(
+        id = "example_module",
+        displayName = "Example Module",
+        description = "An automatically discovered module."
+)
+public final class ExampleModule extends AbstractModule {
+
+    @ModuleProperty(
+            id = "threshold",
+            displayName = "Threshold",
+            description = "Example numeric threshold.",
+            min = "0",
+            max = "1000"
+    )
+    private final int threshold = 100;
+
+}
+```
+
+The framework automatically discovers the module and property, captures the field initializer as its default value, adds
+command completion, validates command and TOML input, and persists the property at `modules.example_module.threshold`.
 
 ## Feedback
 

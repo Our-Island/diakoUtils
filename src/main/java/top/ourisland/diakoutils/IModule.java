@@ -3,6 +3,11 @@ package top.ourisland.diakoutils;
 import com.electronwill.nightconfig.core.Config;
 import net.minecraft.server.MinecraftServer;
 import top.ourisland.diakoutils.annotation.ModuleMetadata;
+import top.ourisland.diakoutils.property.ModulePropertyChange;
+import top.ourisland.diakoutils.property.PropertyValidationResult;
+
+import java.util.Collection;
+import java.util.Map;
 
 public interface IModule {
 
@@ -27,6 +32,16 @@ public interface IModule {
     }
 
     default void onDisable(MinecraftServer server) {
+    }
+
+    default PropertyValidationResult validateProperties(Map<String, Object> candidateValues) {
+        return PropertyValidationResult.success();
+    }
+
+    default void onPropertiesChanged(
+            MinecraftServer server,
+            Collection<ModulePropertyChange<?>> changes
+    ) {
     }
 
     default String statusLine() {

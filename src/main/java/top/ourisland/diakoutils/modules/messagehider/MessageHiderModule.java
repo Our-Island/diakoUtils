@@ -1,8 +1,8 @@
 package top.ourisland.diakoutils.modules.messagehider;
 
-import com.electronwill.nightconfig.core.Config;
 import top.ourisland.diakoutils.AbstractModule;
 import top.ourisland.diakoutils.annotation.DiakoModule;
+import top.ourisland.diakoutils.annotation.ModuleProperty;
 
 @DiakoModule(
         id = "message_hider",
@@ -11,31 +11,21 @@ import top.ourisland.diakoutils.annotation.DiakoModule;
 )
 public final class MessageHiderModule extends AbstractModule {
 
-    private boolean hidePublicChat = true;
-    private boolean hideJoinLeaveMessages = false;
+    @ModuleProperty(
+            id = "hide_public_chat",
+            displayName = "Hide Public Chat",
+            description = "Hide public player chat broadcasts.",
+            order = 10
+    )
+    private final boolean hidePublicChat = true;
 
-    @Override
-    public void loadConfig(Config config, String path) {
-        var enabledValue = config.get(path + ".enabled");
-        setEnabled(enabledValue instanceof Boolean enabled && enabled);
-
-        var hidePublicChatValue = config.get(path + ".hide_public_chat");
-        if (hidePublicChatValue instanceof Boolean value) {
-            hidePublicChat = value;
-        }
-
-        var hideJoinLeaveValue = config.get(path + ".hide_join_leave_messages");
-        if (hideJoinLeaveValue instanceof Boolean value) {
-            hideJoinLeaveMessages = value;
-        }
-    }
-
-    @Override
-    public void saveConfig(Config config, String path) {
-        config.set(path + ".enabled", enabled());
-        config.set(path + ".hide_public_chat", hidePublicChat);
-        config.set(path + ".hide_join_leave_messages", hideJoinLeaveMessages);
-    }
+    @ModuleProperty(
+            id = "hide_join_leave_messages",
+            displayName = "Hide Join/Leave Messages",
+            description = "Hide player join and leave messages.",
+            order = 20
+    )
+    private final boolean hideJoinLeaveMessages = false;
 
     @Override
     public String statusLine() {

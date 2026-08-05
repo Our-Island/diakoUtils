@@ -2,6 +2,7 @@ package top.ourisland.diakoutils;
 
 import net.minecraft.server.MinecraftServer;
 import top.ourisland.diakoutils.discovery.ModuleScanner;
+import top.ourisland.diakoutils.property.ModulePropertyRegistry;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -12,7 +13,12 @@ public final class ModuleManager {
 
     private final Map<String, IModule> modules = new LinkedHashMap<>();
     private final Map<Class<? extends IModule>, IModule> modulesByType = new LinkedHashMap<>();
+    private final ModulePropertyRegistry properties;
     private MinecraftServer currentServer;
+
+    public ModuleManager(ModulePropertyRegistry properties) {
+        this.properties = properties;
+    }
 
     @SuppressWarnings("UnusedReturnValue")
     public int discoverAndRegister(String modId, String basePackage) {
@@ -33,6 +39,7 @@ public final class ModuleManager {
             );
         }
 
+        properties.register(module);
         modules.put(moduleId, module);
         modulesByType.put(module.getClass(), module);
     }

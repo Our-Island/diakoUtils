@@ -15,7 +15,11 @@ public final class DiakoPermissions {
             STATUS = "diakoutils.command.status",
             ENABLE = "diakoutils.command.enable",
             DISABLE = "diakoutils.command.disable",
-            RELOAD = "diakoutils.command.reload";
+            RELOAD = "diakoutils.command.reload",
+            CONFIG = "diakoutils.command.config",
+            CONFIG_GET = "diakoutils.command.config.get",
+            CONFIG_SET = "diakoutils.command.config.set",
+            CONFIG_RESET = "diakoutils.command.config.reset";
 
     private static final String LUCKPERMS_MOD_ID = "luckperms";
     private static boolean warnedLuckPermsFailure = false;

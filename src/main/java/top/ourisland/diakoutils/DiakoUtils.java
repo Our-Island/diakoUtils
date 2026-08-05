@@ -6,13 +6,21 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import org.slf4j.Logger;
 import top.ourisland.diakoutils.command.DiakoCommand;
 import top.ourisland.diakoutils.config.ConfigManager;
+import top.ourisland.diakoutils.property.ModulePropertyRegistry;
+import top.ourisland.diakoutils.property.ModulePropertyService;
 
 public final class DiakoUtils implements ModInitializer {
 
     public static final String MOD_ID = "diakoutils";
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static final ModuleManager MODULES = new ModuleManager();
-    public static final ConfigManager CONFIG = new ConfigManager(MODULES);
+    public static final ModulePropertyRegistry PROPERTIES = new ModulePropertyRegistry();
+    public static final ModuleManager MODULES = new ModuleManager(PROPERTIES);
+    public static final ConfigManager CONFIG = new ConfigManager(MODULES, PROPERTIES);
+    public static final ModulePropertyService PROPERTY_SERVICE = new ModulePropertyService(
+            MODULES,
+            PROPERTIES,
+            CONFIG
+    );
     private static final String MODULE_PACKAGE = "top.ourisland.diakoutils.modules";
 
     @Override
