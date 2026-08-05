@@ -1,6 +1,7 @@
 package top.ourisland.diakoutils;
 
 import net.minecraft.server.MinecraftServer;
+import top.ourisland.diakoutils.discovery.ModuleScanner;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -10,14 +11,30 @@ import java.util.Set;
 public final class ModuleManager {
 
     private final Map<String, IModule> modules = new LinkedHashMap<>();
+    private final Map<Class<? extends IModule>, IModule> modulesByType = new LinkedHashMap<>();
     private MinecraftServer currentServer;
 
+    @SuppressWarnings("UnusedReturnValue")
+    public int discoverAndRegister(String modId, String basePackage) {
+        var discovered = ModuleScanner.discover(modId, basePackage);
+        discovered.forEach(this::register);
+        return discovered.size();
+    }
+
     public void register(IModule module) {
-        if (modules.containsKey(module.id())) {
-            throw new IllegalArgumentException("Duplicate module id: " + module.id());
+        var moduleId = module.id();
+        if (modules.containsKey(moduleId)) {
+            throw new IllegalArgumentException("Duplicate module id: " + moduleId);
         }
 
-        modules.put(module.id(), module);
+        if (modulesByType.containsKey(module.getClass())) {
+            throw new IllegalArgumentException(
+                    "Duplicate module type: " + module.getClass().getName()
+            );
+        }
+
+        modules.put(moduleId, module);
+        modulesByType.put(module.getClass(), module);
     }
 
     public Collection<IModule> all() {
@@ -30,6 +47,10 @@ public final class ModuleManager {
 
     public IModule get(String id) {
         return modules.get(id);
+    }
+
+    public <T extends IModule> T get(Class<T> moduleType) {
+        return moduleType.cast(modulesByType.get(moduleType));
     }
 
     public boolean isEnabled(String id) {

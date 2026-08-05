@@ -2,18 +2,17 @@ package top.ourisland.diakoutils.modules.messagehider;
 
 import com.electronwill.nightconfig.core.Config;
 import top.ourisland.diakoutils.AbstractModule;
+import top.ourisland.diakoutils.annotation.DiakoModule;
 
+@DiakoModule(
+        id = "message_hider",
+        displayName = "Message Hider",
+        description = "Hide public chat broadcasts and, optionally, join/leave messages."
+)
 public final class MessageHiderModule extends AbstractModule {
-
-    public static final String ID = "message_hider";
 
     private boolean hidePublicChat = true;
     private boolean hideJoinLeaveMessages = false;
-
-    @Override
-    public String description() {
-        return "Hide public chat broadcasts and, optionally, join/leave messages.";
-    }
 
     @Override
     public void loadConfig(Config config, String path) {
@@ -59,16 +58,6 @@ public final class MessageHiderModule extends AbstractModule {
 
     public boolean shouldHideJoinLeaveMessages() {
         return enabled() && hideJoinLeaveMessages;
-    }
-
-    @Override
-    public String id() {
-        return ID;
-    }
-
-    @Override
-    public String displayName() {
-        return "Message Hider";
     }
 
 }

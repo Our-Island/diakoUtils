@@ -2,11 +2,12 @@ package top.ourisland.diakoutils;
 
 import com.electronwill.nightconfig.core.Config;
 import net.minecraft.server.MinecraftServer;
+import top.ourisland.diakoutils.annotation.ModuleMetadata;
 
 public interface IModule {
 
     default String description() {
-        return "";
+        return ModuleMetadata.require(getClass()).description();
     }
 
     default void loadConfig(Config config, String path) {
@@ -38,8 +39,12 @@ public interface IModule {
         );
     }
 
-    String id();
+    default String id() {
+        return ModuleMetadata.require(getClass()).id();
+    }
 
-    String displayName();
+    default String displayName() {
+        return ModuleMetadata.require(getClass()).displayName();
+    }
 
 }

@@ -8,10 +8,14 @@ import net.minecraft.world.level.entity.EntityTypeTest;
 import top.ourisland.diakoutils.AbstractModule;
 import top.ourisland.diakoutils.DiakoUtils;
 import top.ourisland.diakoutils.TickingModule;
+import top.ourisland.diakoutils.annotation.DiakoModule;
 
+@DiakoModule(
+        id = "entities_monitor",
+        displayName = "Entities Monitor",
+        description = "Monitor total entity count and notify players when it exceeds a threshold."
+)
 public final class EntitiesMonitorModule extends AbstractModule implements TickingModule {
-
-    public static final String ID = "entities_monitor";
 
     private int threshold = 800;
     private int checkIntervalTicks = 100;
@@ -22,11 +26,6 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
     private long tickCounter = 0;
     private long lastNotifyTick = -1;
     private boolean lastWasOver = false;
-
-    @Override
-    public String description() {
-        return "Monitor total entity count and notify players when it exceeds a threshold.";
-    }
 
     @Override
     public void loadConfig(Config config, String path) {
@@ -92,16 +91,6 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
         );
     }
 
-    @Override
-    public String id() {
-        return ID;
-    }
-
-    @Override
-    public String displayName() {
-        return "Entities Monitor";
-    }
-
     private static int intValue(
             Object value,
             int fallback,
@@ -135,7 +124,7 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
             var playerList = server.getPlayerList();
             playerList.broadcastSystemMessage(text, _ -> text, overlay);
 
-            DiakoUtils.LOGGER.info("[{}] {}", ID, message);
+            DiakoUtils.LOGGER.info("[{}] {}", id(), message);
             lastNotifyTick = tickCounter;
         }
 

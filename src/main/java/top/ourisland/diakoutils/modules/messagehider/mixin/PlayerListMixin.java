@@ -38,7 +38,7 @@ public abstract class PlayerListMixin {
 
     @Unique
     private static MessageHiderModule messageHider() {
-        return (MessageHiderModule) DiakoUtils.MODULES.get(MessageHiderModule.ID);
+        return DiakoUtils.MODULES.get(MessageHiderModule.class);
     }
 
     @Inject(
