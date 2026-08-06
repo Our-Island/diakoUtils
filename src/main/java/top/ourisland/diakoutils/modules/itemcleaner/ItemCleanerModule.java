@@ -55,7 +55,7 @@ public final class ItemCleanerModule extends AbstractModule implements TickingMo
             max = "9223372036854775807",
             order = 30
     )
-    private long threshold = 3000 * 64;
+    private long threshold = 2500 * 64;
 
     @ModuleProperty(
             id = "warning_duration_seconds",

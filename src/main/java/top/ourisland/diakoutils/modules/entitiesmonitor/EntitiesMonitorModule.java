@@ -15,6 +15,7 @@ import top.ourisland.diakoutils.property.PropertyValidationResult;
 import top.ourisland.diakoutils.text.DiakoText;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 
 @DiakoModule(
@@ -29,10 +30,10 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
             displayName = "Entity Threshold",
             description = "Entity count used to trigger a warning.",
             min = "0",
-            max = "1000000",
+            max = "2147483647",
             order = 10
     )
-    private int threshold = 800;
+    private int threshold = 2000;
 
     @ModuleProperty(
             id = "check_interval_ticks",
@@ -74,6 +75,10 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
     private long tickCounter;
     private long lastNotifyTick = -1;
     private boolean lastWasOver;
+
+    private static String formatNumber(long value) {
+        return String.format(Locale.ROOT, "%,d", value);
+    }
 
     @Override
     public void onEnable(MinecraftServer server) {
@@ -151,10 +156,10 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
                     messageTemplate,
                     DiakoText.replacements(
                             "{count}",
-                            Component.literal(String.valueOf(total))
+                            Component.literal(formatNumber(total))
                                     .withStyle(ChatFormatting.YELLOW),
                             "{threshold}",
-                            Component.literal(String.valueOf(threshold))
+                            Component.literal(formatNumber(threshold))
                                     .withStyle(ChatFormatting.YELLOW)
                     )
             );
@@ -165,8 +170,8 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
             );
 
             var logMessage = messageTemplate
-                    .replace("{count}", String.valueOf(total))
-                    .replace("{threshold}", String.valueOf(threshold));
+                    .replace("{count}", formatNumber(total))
+                    .replace("{threshold}", formatNumber(threshold));
             DiakoUtils.LOGGER.warn("[{}] {}", id(), logMessage);
             lastNotifyTick = tickCounter;
         }
