@@ -17,7 +17,7 @@ public final class MessageHiderModule extends AbstractModule {
             description = "Hide public player chat broadcasts.",
             order = 10
     )
-    private final boolean hidePublicChat = true;
+    private boolean hidePublicChat = true;
 
     @ModuleProperty(
             id = "hide_join_leave_messages",
@@ -25,20 +25,17 @@ public final class MessageHiderModule extends AbstractModule {
             description = "Hide player join and leave messages.",
             order = 20
     )
-    private final boolean hideJoinLeaveMessages = false;
+    private boolean hideJoinLeaveMessages = false;
 
     @Override
     public String statusLine() {
-        return "Status: %s | Public chat: %s | Join/leave messages: %s".formatted(
-                enabled()
-                        ? "§aEnabled§r"
-                        : "§cDisabled§r",
+        return "Public chat: %s | Join/leave messages: %s".formatted(
                 shouldHidePublicChat()
-                        ? "§ahidden§r"
-                        : "§cvisible§r",
+                        ? "hidden"
+                        : "visible",
                 shouldHideJoinLeaveMessages()
-                        ? "§ahidden§r"
-                        : "§cvisible§r"
+                        ? "hidden"
+                        : "visible"
         );
     }
 

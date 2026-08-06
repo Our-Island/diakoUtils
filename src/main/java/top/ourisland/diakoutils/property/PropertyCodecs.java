@@ -2,6 +2,8 @@ package top.ourisland.diakoutils.property;
 
 import com.electronwill.nightconfig.core.Config;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
@@ -319,7 +321,25 @@ public final class PropertyCodecs {
         }
     };
 
+    private static final PropertyCodec<List<String>> STRING_LIST = new StringListPropertyCodec();
+
     private PropertyCodecs() {
+    }
+
+    public static PropertyCodec<?> find(Field field) {
+        if (field.getType() == List.class) {
+            var genericType = field.getGenericType();
+            if (genericType instanceof ParameterizedType parameterizedType
+                    && parameterizedType.getActualTypeArguments().length == 1
+                    && parameterizedType.getActualTypeArguments()[0] == String.class
+            ) {
+                return STRING_LIST;
+            }
+
+            return null;
+        }
+
+        return find(field.getType());
     }
 
     public static PropertyCodec<?> find(Class<?> type) {

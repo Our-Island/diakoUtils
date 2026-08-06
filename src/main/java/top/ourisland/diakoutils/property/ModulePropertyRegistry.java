@@ -80,7 +80,7 @@ public final class ModulePropertyRegistry {
     ) {
         validateField(module, field, annotation);
 
-        var codec = (PropertyCodec) PropertyCodecs.find(field.getType());
+        var codec = (PropertyCodec) PropertyCodecs.find(field);
         if (codec == null) {
             throw invalidField(
                     module,

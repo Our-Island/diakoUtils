@@ -158,10 +158,30 @@ final class ModuleCommands {
             return 1;
         }
 
-        if (enabled) {
-            DiakoUtils.MODULES.enable(id, source.getServer());
-        } else {
-            DiakoUtils.MODULES.disable(id, source.getServer());
+        try {
+            if (enabled) {
+                DiakoUtils.MODULES.enable(id, source.getServer());
+            } else {
+                DiakoUtils.MODULES.disable(id, source.getServer());
+            }
+        } catch (RuntimeException e) {
+            DiakoUtils.LOGGER.error(
+                    "[{}] Failed to change module state for {}",
+                    DiakoUtils.MOD_ID,
+                    id,
+                    e
+            );
+            source.sendFailure(error(
+                    "Module could not be %s: %s".formatted(
+                            enabled
+                                    ? "enabled"
+                                    : "disabled",
+                            e.getMessage() == null
+                                    ? "module lifecycle failed"
+                                    : e.getMessage()
+                    )
+            ));
+            return 0;
         }
 
         try {

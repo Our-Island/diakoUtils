@@ -74,7 +74,12 @@ public final class ModuleManager {
 
         if (!module.enabled()) {
             module.setEnabled(true);
-            module.onEnable(server);
+            try {
+                module.onEnable(server);
+            } catch (RuntimeException e) {
+                module.setEnabled(false);
+                throw e;
+            }
         }
 
         return true;
@@ -88,16 +93,53 @@ public final class ModuleManager {
         }
 
         if (module.enabled()) {
-            module.setEnabled(false);
             module.onDisable(server);
+            module.setEnabled(false);
         }
 
         return true;
     }
 
-    public void onEndServerTick(MinecraftServer server) {
+    public void onServerStarted(MinecraftServer server) {
         currentServer = server;
 
+        modules.values().stream()
+                .filter(IModule::enabled)
+                .forEach(module -> {
+                    try {
+                        module.onEnable(server);
+                    } catch (RuntimeException e) {
+                        module.setEnabled(false);
+                        DiakoUtils.LOGGER.error(
+                                "[{}] Failed to enable configured module {} during server startup",
+                                DiakoUtils.MOD_ID,
+                                module.id(),
+                                e
+                        );
+                    }
+                });
+    }
+
+    public void onServerStopping(MinecraftServer server) {
+        modules.values().stream()
+                .filter(IModule::enabled)
+                .forEach(module -> {
+                    try {
+                        module.onDisable(server);
+                    } catch (RuntimeException e) {
+                        DiakoUtils.LOGGER.error(
+                                "[{}] Failed to stop module {} cleanly",
+                                DiakoUtils.MOD_ID,
+                                module.id(),
+                                e
+                        );
+                    }
+                });
+
+        currentServer = null;
+    }
+
+    public void onEndServerTick(MinecraftServer server) {
         modules.values().stream()
                 .filter(module -> module.enabled()
                         && module instanceof TickingModule

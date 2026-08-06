@@ -2,6 +2,7 @@ package top.ourisland.diakoutils;
 
 import com.mojang.logging.LogUtils;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import org.slf4j.Logger;
 import top.ourisland.diakoutils.command.DiakoCommand;
@@ -30,6 +31,8 @@ public final class DiakoUtils implements ModInitializer {
         CONFIG.loadOrCreate();
         DiakoCommand.register();
 
+        ServerLifecycleEvents.SERVER_STARTED.register(MODULES::onServerStarted);
+        ServerLifecycleEvents.SERVER_STOPPING.register(MODULES::onServerStopping);
         ServerTickEvents.END_SERVER_TICK.register(MODULES::onEndServerTick);
 
         LOGGER.info("[{}] Loaded {} modules", MOD_ID, MODULES.all().size());

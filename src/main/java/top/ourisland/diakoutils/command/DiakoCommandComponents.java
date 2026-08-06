@@ -2,11 +2,11 @@ package top.ourisland.diakoutils.command;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import top.ourisland.diakoutils.DiakoUtils;
 import top.ourisland.diakoutils.IModule;
 import top.ourisland.diakoutils.property.ModulePropertyChange;
 import top.ourisland.diakoutils.property.ModulePropertyDescriptor;
+import top.ourisland.diakoutils.text.DiakoText;
 
 import java.util.Arrays;
 
@@ -72,7 +72,7 @@ final class DiakoCommandComponents {
             ModulePropertyChange<?> change
     ) {
         var descriptor = DiakoUtils.PROPERTIES.get(moduleId, change.propertyId());
-        return prefix()
+        return DiakoText.prefix()
                 .append(Component.literal(action + " ")
                         .withStyle(ChatFormatting.GREEN)
                 )
@@ -90,16 +90,6 @@ final class DiakoCommandComponents {
                 )
                 .append(Component.literal(format(descriptor, change.newValue()))
                         .withStyle(valueColor(change.newValue()))
-                );
-    }
-
-    private static MutableComponent prefix() {
-        return Component.empty()
-                .append(Component.literal("diakoUtils")
-                        .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
-                )
-                .append(Component.literal(" › ")
-                        .withStyle(ChatFormatting.DARK_GRAY)
                 );
     }
 
@@ -144,26 +134,26 @@ final class DiakoCommandComponents {
     }
 
     static Component header(String title) {
-        return prefix().append(
+        return DiakoText.prefix().append(
                 Component.literal(title)
                         .withStyle(ChatFormatting.YELLOW)
         );
     }
 
     static Component success(String message) {
-        return prefix().append(Component.literal(message)
+        return DiakoText.prefix().append(Component.literal(message)
                 .withStyle(ChatFormatting.GREEN)
         );
     }
 
     static Component notice(String message) {
-        return prefix().append(Component.literal(message)
+        return DiakoText.prefix().append(Component.literal(message)
                 .withStyle(ChatFormatting.YELLOW)
         );
     }
 
     static Component error(String message) {
-        return prefix().append(Component.literal(message)
+        return DiakoText.prefix().append(Component.literal(message)
                 .withStyle(ChatFormatting.RED)
         );
     }

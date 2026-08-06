@@ -1,5 +1,6 @@
 package top.ourisland.diakoutils.modules.entitiesmonitor;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
@@ -11,6 +12,7 @@ import top.ourisland.diakoutils.annotation.DiakoModule;
 import top.ourisland.diakoutils.annotation.ModuleProperty;
 import top.ourisland.diakoutils.property.ModulePropertyChange;
 import top.ourisland.diakoutils.property.PropertyValidationResult;
+import top.ourisland.diakoutils.text.DiakoText;
 
 import java.util.Collection;
 import java.util.Map;
@@ -30,7 +32,7 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
             max = "1000000",
             order = 10
     )
-    private final int threshold = 800;
+    private int threshold = 800;
 
     @ModuleProperty(
             id = "check_interval_ticks",
@@ -40,7 +42,7 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
             max = "72000",
             order = 20
     )
-    private final int checkIntervalTicks = 100;
+    private int checkIntervalTicks = 100;
 
     @ModuleProperty(
             id = "cooldown_ticks",
@@ -50,7 +52,7 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
             max = "720000",
             order = 30
     )
-    private final int cooldownTicks = 200;
+    private int cooldownTicks = 200;
 
     @ModuleProperty(
             id = "overlay",
@@ -58,23 +60,28 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
             description = "Send warnings through the overlay/actionbar.",
             order = 40
     )
-    private final boolean overlay = false;
+    private boolean overlay = false;
 
     @ModuleProperty(
             id = "message_template",
             displayName = "Message Template",
-            description = "Warning message. Supports {count} and {threshold}.",
+            description = "Warning body. Supports {count} and {threshold}.",
             maxLength = 512,
             order = 50
     )
-    private final String messageTemplate = "[EntitiesMonitor] TOO MANY ENTITIES!!!!! {count} (Threshold {threshold})";
+    private String messageTemplate = "Entity count {count} exceeded the threshold of {threshold}.";
 
-    private long tickCounter = 0;
+    private long tickCounter;
     private long lastNotifyTick = -1;
-    private boolean lastWasOver = false;
+    private boolean lastWasOver;
 
     @Override
     public void onEnable(MinecraftServer server) {
+        resetRuntimeState();
+    }
+
+    @Override
+    public void onDisable(MinecraftServer server) {
         resetRuntimeState();
     }
 
@@ -109,16 +116,13 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
 
     @Override
     public String statusLine() {
-        return "Status: %s | Threshold: %d | Check interval: %d ticks | Cooldown: %d ticks | Overlay: %s".formatted(
-                enabled()
-                        ? "§aEnabled§r"
-                        : "§cDisabled§r",
+        return "Threshold: %d | Check interval: %d ticks | Cooldown: %d ticks | Overlay: %s".formatted(
                 threshold,
                 checkIntervalTicks,
                 cooldownTicks,
                 overlay
-                        ? "§aon§r"
-                        : "§coff§r"
+                        ? "on"
+                        : "off"
         );
     }
 
@@ -142,15 +146,28 @@ public final class EntitiesMonitorModule extends AbstractModule implements Ticki
         var shouldNotify = over && (!lastWasOver || cooldownReady);
 
         if (shouldNotify) {
-            var message = messageTemplate
+            var text = DiakoText.moduleTemplate(
+                    displayName(),
+                    messageTemplate,
+                    DiakoText.replacements(
+                            "{count}",
+                            Component.literal(String.valueOf(total))
+                                    .withStyle(ChatFormatting.YELLOW),
+                            "{threshold}",
+                            Component.literal(String.valueOf(threshold))
+                                    .withStyle(ChatFormatting.YELLOW)
+                    )
+            );
+            server.getPlayerList().broadcastSystemMessage(
+                    text,
+                    _ -> text,
+                    overlay
+            );
+
+            var logMessage = messageTemplate
                     .replace("{count}", String.valueOf(total))
                     .replace("{threshold}", String.valueOf(threshold));
-
-            var text = Component.literal(message);
-            var playerList = server.getPlayerList();
-            playerList.broadcastSystemMessage(text, _ -> text, overlay);
-
-            DiakoUtils.LOGGER.info("[{}] {}", id(), message);
+            DiakoUtils.LOGGER.warn("[{}] {}", id(), logMessage);
             lastNotifyTick = tickCounter;
         }
 

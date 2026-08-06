@@ -43,6 +43,26 @@ Current options:
 - Overlay/actionbar output toggle
 - Custom warning message template
 
+### Item Cleaner
+
+Module ID: `item_cleaner`
+
+Counts matching dropped-item stack contents across all loaded server levels. When the configured item count exceeds the
+threshold, the module warns players, shows an actionbar countdown, performs a final scan, and removes the currently
+matching dropped-item entities.
+
+Current options:
+
+- `WHITELIST`, `BLACKLIST`, and `ALL` filter modes
+- Item selectors using item IDs and `#item_tag` entries
+- Item-count threshold based on actual stack sizes
+- Configurable warning duration and scan interval
+- Automatic countdown cancellation when the count returns to the threshold or below
+
+The default mode is `WHITELIST`. Its default selectors cover common stone-like items, stone, cobblestone, netherrack,
+and end stone. The module only affects `ItemEntity` drops; it does not modify inventories, containers, item frames, or
+block entities.
+
 ## Optional integrations
 
 ### LuckPerms
@@ -77,7 +97,8 @@ Available subcommands:
 
 The `<module>` argument suggests registered module IDs. Property commands also suggest property IDs and common values
 such as booleans, enum values, defaults, and configured numeric limits. String values use a greedy argument, so values
-containing spaces do not need quotes.
+containing spaces do not need quotes. `List<String>` properties use comma-separated command input and are persisted as
+native TOML arrays.
 
 ## Permissions
 
@@ -130,7 +151,21 @@ threshold = 800
 check_interval_ticks = 100
 cooldown_ticks = 200
 overlay = false
-message_template = "[EntitiesMonitor] TOO MANY ENTITIES!!!!! {count} (Threshold {threshold})"
+message_template = "Entity count {count} exceeded the threshold of {threshold}."
+
+[modules.item_cleaner]
+enabled = false
+mode = "whitelist"
+items = [
+    "#diakoutils:item_cleaner/stone_like",
+    "minecraft:stone",
+    "minecraft:cobblestone",
+    "minecraft:netherrack",
+    "minecraft:end_stone"
+]
+threshold = 1000
+warning_duration_seconds = 10
+check_interval_ticks = 20
 ```
 
 Property changes made through `/diako config` are applied immediately and persisted. If saving fails, the in-memory
@@ -146,7 +181,26 @@ The `entities_monitor.message_template` option supports these placeholders:
 | `{count}`     | Current total entity count  |
 | `{threshold}` | Configured entity threshold |
 
-The template must contain `{count}`.
+The template must contain `{count}`. The shared `diakoUtils › Entities Monitor ›` prefix and colors are applied by the
+module and cannot be replaced by the template.
+
+### Item cleaner selectors
+
+`item_cleaner.items` accepts item IDs and item tags. Tags start with `#`:
+
+```text
+minecraft:stone
+#diakoutils:item_cleaner/stone_like
+```
+
+Command input is comma-separated:
+
+```mcfunction
+/diako config item_cleaner set items minecraft:stone,minecraft:cobblestone,#diakoutils:item_cleaner/stone_like
+```
+
+`WHITELIST` removes only listed items, `BLACKLIST` preserves listed items and removes other drops, and `ALL` ignores the
+list. Empty lists are rejected in whitelist and blacklist modes. Enabling `ALL` mode writes a warning to the server log.
 
 ## Development
 
@@ -191,7 +245,9 @@ src/main/java/top/ourisland/diakoutils/
 ├── property/
 ├── modules/
 │   ├── entitiesmonitor/
+│   ├── itemcleaner/
 │   └── messagehider/
+├── text/
 └── permissions/
 ```
 
@@ -222,7 +278,7 @@ public final class ExampleModule extends AbstractModule {
             min = "0",
             max = "1000"
     )
-    private final int threshold = 100;
+    private int threshold = 100;
 
 }
 ```
