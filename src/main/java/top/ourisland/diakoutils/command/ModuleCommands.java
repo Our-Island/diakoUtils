@@ -187,10 +187,21 @@ final class ModuleCommands {
         try {
             DiakoUtils.CONFIG.saveOrThrow();
         } catch (ConfigPersistenceException e) {
-            if (wasEnabled) {
-                DiakoUtils.MODULES.enable(id, source.getServer());
-            } else {
-                DiakoUtils.MODULES.disable(id, source.getServer());
+            try {
+                if (wasEnabled) {
+                    DiakoUtils.MODULES.enable(id, source.getServer());
+                } else {
+                    DiakoUtils.MODULES.disable(id, source.getServer());
+                }
+            } catch (RuntimeException rollbackError) {
+                e.addSuppressed(rollbackError);
+                module.setEnabled(wasEnabled);
+                DiakoUtils.LOGGER.error(
+                        "[{}] Failed to restore module state for {} after a persistence error",
+                        DiakoUtils.MOD_ID,
+                        id,
+                        rollbackError
+                );
             }
 
             DiakoUtils.LOGGER.error(

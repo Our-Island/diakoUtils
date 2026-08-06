@@ -3,6 +3,7 @@ package top.ourisland.diakoutils.modules.itemcleaner;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import top.ourisland.diakoutils.AbstractModule;
@@ -22,6 +23,9 @@ import java.util.*;
         description = "Remove excessive dropped items using configurable filters."
 )
 public final class ItemCleanerModule extends AbstractModule implements TickingModule {
+
+    private static final EntityTypeTest<Entity, ItemEntity> ITEM_ENTITIES =
+            EntityTypeTest.forClass(ItemEntity.class);
 
     private static final List<String> DEFAULT_ITEMS = List.of(
             "#diakoutils:item_cleaner/stone_like",
@@ -336,7 +340,7 @@ public final class ItemCleanerModule extends AbstractModule implements TickingMo
         for (var level : server.getAllLevels()) {
             var levelItems = new ArrayList<ItemEntity>();
             level.getEntities(
-                    EntityTypeTest.forClass(ItemEntity.class),
+                    ITEM_ENTITIES,
                     entity -> !entity.isRemoved(),
                     levelItems
             );

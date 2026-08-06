@@ -144,8 +144,42 @@ public final class ModuleManager {
                 .filter(module -> module.enabled()
                         && module instanceof TickingModule
                 )
-                .map(module -> (TickingModule) module)
-                .forEach(tickingModule -> tickingModule.onEndServerTick(server));
+                .forEach(module -> tickModuleSafely(
+                        module,
+                        (TickingModule) module,
+                        server
+                ));
+    }
+
+    private static void tickModuleSafely(
+            IModule module,
+            TickingModule tickingModule,
+            MinecraftServer server
+    ) {
+        try {
+            tickingModule.onEndServerTick(server);
+        } catch (RuntimeException e) {
+            DiakoUtils.LOGGER.error(
+                    "[{}] Module {} failed during server tick and was disabled",
+                    DiakoUtils.MOD_ID,
+                    module.id(),
+                    e
+            );
+
+            try {
+                module.onDisable(server);
+            } catch (RuntimeException disableError) {
+                e.addSuppressed(disableError);
+                DiakoUtils.LOGGER.error(
+                        "[{}] Module {} also failed while being disabled after a tick error",
+                        DiakoUtils.MOD_ID,
+                        module.id(),
+                        disableError
+                );
+            } finally {
+                module.setEnabled(false);
+            }
+        }
     }
 
     public MinecraftServer currentServer() {
