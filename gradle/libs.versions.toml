@@ -1,7 +1,7 @@
 [versions]
 archivesName = "diakoUtils"
 mavenGroup = "top.ourisland"
-modVersion = "0.1.1-SNAPSHOT"
+modVersion = "0.2.0-SNAPSHOT"
 
 targetJava = "25"
 
